@@ -31,16 +31,18 @@ app.get("/",async(req,res)=>{
 app.post("/create", async(req,res)=>{
     try {
         const {email, fullname} = req.body;
-        console.log(email);
-        console.log(fullname);
+        // console.log(email);
+        // console.log(fullname);
 
-        const newUserData = UserModel({
+        const newUserData = await UserModel({
             email : email,
             fullname : fullname,
         })
-        await newUserData.save();
+
+        console.log(newUserData);
+        const data = await newUserData.save();
         // const userData = await UserModel.create({email});
-        return response.status(202).json({message : "user created success"});
+        return res.status(202).json({message : "user created success", data});
     } catch (error) {
         return res.status(501).json({message  : error})
     }
