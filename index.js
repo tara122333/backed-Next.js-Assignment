@@ -2,26 +2,19 @@
 require("dotenv").config();
 
 // import libraries
-import express from 'express'; // express
+import express, { response } from 'express'; // express
 import cors from 'cors';  //cors
 import helmet from 'helmet';  //helmet
-import passport from 'passport'; //passport
-const session = require('express-session') // session
 
 const port = 4000;
 
 // Database conncetion
-import ConnectDB from'./database/connection';
+import ConnectDB from'./database/index';
+import { UserModel } from './database/UserSchema';
 
 // app name
 const app = express();
 
-// session
-app.use(session({
-    resave: false,
-    saveUninitialized: true,
-    secret: 'bla bla bla' 
-  }));
 
 
 // application middlewares
@@ -34,6 +27,24 @@ app.use(cors());
 app.get("/",async(req,res)=>{
     res.json({message : "Success"});
 })
+
+app.post("/create", async(req,res)=>{
+    try {
+        const {email, fullname} = req.body;
+        console.log(email);
+        console.log(fullname);
+
+        const newUserData = UserModel({
+            email : email,
+            fullname : fullname,
+        })
+        await newUserData.save();
+        // const userData = await UserModel.create({email});
+        return response.status(202).json({message : "user created success"});
+    } catch (error) {
+        return res.status(501).json({message  : error})
+    }
+});
 
 app.listen(port,()=>{
     console.log(`server has been started on port 4000`);
